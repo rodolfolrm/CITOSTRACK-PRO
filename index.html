@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CITOSTRACK – Registro</title>
+  <link rel="stylesheet" href="styles.css" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self';">
+</head>
+<body>
+  <!-- ======== UI ======== -->
+  <header class="appbar">
+    <div class="appbar-inner">
+      <div class="brand">
+        <img id="logoPreview" class="logoPreview" alt="Logo" src="logo.png" />
+        <div>
+          <h1>CITOSTRACK</h1>
+          <small>ICC = (Preparaciones + Administraciones) / Tiempo (min)</small>
+          <div>
+            <label class="uploader" for="i_logo">Cambiar logo</label>
+            <input id="i_logo" type="file" accept="image/*" style="display:none" />
+          </div>
+        </div>
+      </div>
+      <div class="actions actions-screen">
+        <button class="btn ghost" id="btnLimpiar">Limpiar tabla</button>
+        <button class="btn flat" id="btnPDF">Exportar PDF</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Registro de funcionarios</h3>
+        <div class="actions">
+          <button class="btn ok" id="btnAdd">+ Nuevo registro</button>
+          <button class="btn danger" id="btnRem">– Eliminar seleccionados</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="table-wrap">
+          <table id="tabla" role="table" aria-label="Registro">
+            <thead>
+              <tr>
+                <th>Sel</th>
+                <th>Nombre</th>
+                <th>RUT</th>
+                <th>Fecha evaluación</th>
+                <th>Semana</th>
+                <th># Preparaciones</th>
+                <th># Administraciones</th>
+                <th>Tiempo (min)</th>
+                <th>ICC</th>
+                <th>Observaciones</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+            <tfoot>
+              <tr>
+                <td colspan="5" style="text-align:right">Totales:</td>
+                <td id="tPrep">0</td>
+                <td id="tAdm">0</td>
+                <td id="tMin">0</td>
+                <td id="tIcc">0.00</td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <p class="hint">
+          La <b>Semana</b> usa regla ISO y el <b>ICC</b> se actualiza en tiempo real.
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <!-- ======== PLANTILLA REPORTE (solo impresión) ======== -->
+  <section id="report" aria-hidden="true">
+    <header>
+      <img id="rLogo" alt="Logo reporte" />
+      <div>
+        <h2>Registro de funcionarios – CITOSTRACK</h2>
+        <p>ICC = (Preparaciones + Administraciones) / Tiempo (min)</p>
+      </div>
+      <div class="meta" id="rMeta">Informe generado:</div>
+    </header>
+
+    <div class="kpis">
+      <div class="k"><div class="l">Total Preparaciones</div><div class="v" id="kPrep">0</div></div>
+      <div class="k"><div class="l">Total Administraciones</div><div class="v" id="kAdm">0</div></div>
+      <div class="k"><div class="l">Total Minutos</div><div class="v" id="kMin">0</div></div>
+      <div class="k"><div class="l">ICC Promedio</div><div class="v" id="kIcc">0.00</div></div>
+    </div>
+
+    <table id="rTable">
+      <colgroup>
+        <col class="c-nombre">
+        <col class="c-rut">
+        <col class="c-fecha">
+        <col class="c-sem">
+        <col class="c-prep">
+        <col class="c-adm">
+        <col class="c-min">
+        <col class="c-icc">
+        <col class="c-obs">
+      </colgroup>
+      <thead>
+        <tr>
+          <th class="t-left">Nombre</th>
+          <th class="t-center">RUT</th>
+          <th class="t-center">Fecha</th>
+          <th class="t-center">Sem.</th>
+          <th class="t-right"># Prep</th>
+          <th class="t-right"># Adm</th>
+          <th class="t-right">Min</th>
+          <th class="t-right">ICC</th>
+          <th class="t-left">Observaciones</th>
+        </tr>
+      </thead>
+      <tbody id="rBody"></tbody>
+      <tfoot>
+        <tr>
+          <td colspan="4" class="t-right">Totales:</td>
+          <td id="rtPrep" class="t-right">0</td>
+          <td id="rtAdm"  class="t-right">0</td>
+          <td id="rtMin"  class="t-right">0</td>
+          <td id="rtIcc"  class="t-right">0.00</td>
+          <td></td>
+        </tr>
+      </tfoot>
+    </table>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>
