@@ -13,11 +13,9 @@
 .appbar{background:var(--primary);color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.16)}
 .appbar-inner{max-width:1200px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px}
 .brand{display:flex;align-items:center;gap:14px}
-.logoPreview{width:96px;height:96px;object-fit:contain;border-radius:6px;background:#fff;border:1px solid #ddd}
+.logoPreview{width:96px;height:96px;object-fit:contain;border-radius:6px;background:#fff;border:1px solid #ddd;cursor:pointer}
 .brand h1{margin:0;font-size:20px;letter-spacing:.2px}
 .brand small{display:block;margin-top:2px;font-size:12px;color:#cfe6ff}
-.uploader{font-size:12px;color:#cfe6ff;text-decoration:underline;cursor:pointer}
-.actions .btn{margin-left:8px}
 .container{max-width:1200px;margin:18px auto;padding:0 20px}
 .card{background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08)}
 .card-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;background:var(--primary-2);color:#fff}
@@ -56,12 +54,14 @@ tfoot td{background:#eef1f4;font-weight:700}
 <header class="appbar">
   <div class="appbar-inner">
     <div class="brand">
-      <img id="logoPreview" class="logoPreview" alt="Logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAQAAAA1QqvMAAAALElEQVR4Xu3BAQ0AAADCoPdPbQ43oAAAAAAAAAAA"/>
+      <label for="i_logo">
+        <img id="logoPreview" class="logoPreview" alt="Logo"
+             src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAQAAAA1QqvMAAAALElEQVR4Xu3BAQ0AAADCoPdPbQ43oAAAAAAAAAAA"/>
+      </label>
+      <input id="i_logo" type="file" accept="image/*" style="display:none">
       <div>
         <h1>CITOSTRACK</h1>
         <small>ICC = (Preparaciones + Administraciones) / Tiempo (min)</small>
-        <label c<label class="uploader" for="i_logo" style="display:none">🖼️ Cargar logo institucional</label>
-        <input id="i_logo" type="file" accept="image/*" style="display:none">
       </div>
     </div>
     <div class="actions actions-screen">
@@ -139,6 +139,7 @@ document.getElementById("btnRem").addEventListener("click",removeRows);
 document.getElementById("btnLimpiar").addEventListener("click",()=>{tbody.innerHTML="";calcAll();});
 document.getElementById("btnPDF").addEventListener("click",buildReportAndPrint);
 const logoInput=document.getElementById("i_logo"),logoImg=document.getElementById("logoPreview"),rLogo=document.getElementById("rLogo");
+logoImg.addEventListener("click",()=>logoInput.click());
 logoInput.addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{logoImg.src=r.result;rLogo.src=r.result;};r.readAsDataURL(f);});
 rLogo.src=logoImg.src;
 function toNum(v){const n=parseFloat(String(v).replace(/[^\d.-]/g,""));return isNaN(n)?0:n;}
@@ -154,3 +155,4 @@ addRow();
 </script>
 </body>
 </html>
+
