@@ -1,137 +1,156 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>CITOSTRACK – Registro</title>
-  <link rel="stylesheet" href="styles.css" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self';">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CITOSTRACK – Registro</title>
+<style>
+:root{
+  --primary:#0d47a1;--primary-2:#1976d2;--ink:#222;--bg:#f6f8fb;--muted:#5f6b7a;
+  --ok:#2e7d32;--danger:#c62828;--ring:rgba(25,118,210,.25);--border:#e3e7ee;
+}
+*{box-sizing:border-box}body{margin:0;font-family:'Segoe UI',Roboto,system-ui,-apple-system,Arial,sans-serif;color:var(--ink);background:var(--bg)}
+.appbar{background:var(--primary);color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.16)}
+.appbar-inner{max-width:1200px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:14px}
+.logoPreview{width:96px;height:96px;object-fit:contain;border-radius:6px;background:#fff;border:1px solid #ddd}
+.brand h1{margin:0;font-size:20px;letter-spacing:.2px}
+.brand small{display:block;margin-top:2px;font-size:12px;color:#cfe6ff}
+.uploader{font-size:12px;color:#cfe6ff;text-decoration:underline;cursor:pointer}
+.actions .btn{margin-left:8px}
+.container{max-width:1200px;margin:18px auto;padding:0 20px}
+.card{background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.card-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;background:var(--primary-2);color:#fff}
+.card-title{margin:0;font-size:18px;font-weight:600}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse}
+th,td{border-bottom:1px solid var(--border);padding:10px 8px;text-align:center;font-size:14px;line-height:1.25;word-break:break-word}
+th{background:#eaf2ff;font-weight:700}
+tbody tr:nth-child(odd){background:#fbfdff}
+tfoot td{background:#eef1f4;font-weight:700}
+.btn{border:none;cursor:pointer;padding:8px 12px;border-radius:8px;font-weight:600}
+.btn.ok{background:var(--ok);color:#fff}
+.btn.danger{background:var(--danger);color:#fff}
+.btn.flat{background:#eef4ff;color:#0b3b85;border:1px solid #cfe0ff}
+.btn.ghost{background:transparent;border:1px solid #fff;color:#fff}
+#report{display:none;padding:0 16mm 12mm 16mm;color:#111;font-size:11px;line-height:1.25}
+#report header{display:flex;align-items:flex-start;gap:12px;border-bottom:2px solid #dfe3ea;padding:0 0 6mm 0;margin-bottom:4mm}
+#report header img{width:72px;height:72px;object-fit:contain;background:#fff;border:1px solid #dcdcdc;border-radius:6px}
+#report header h2{margin:0;font-size:16px}
+#report header p{margin:1mm 0 0;font-size:11px;color:#444}
+#report .meta{margin-left:auto;text-align:right;font-size:10.5px;color:#444}
+#report .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:2mm 0 4mm}
+#report .k{border:1px solid #e6eaf1;border-radius:8px;padding:6px 8px;background:#fbfcff}
+#report .k .l{font-size:10px;color:#666}
+#report .k .v{font-size:13px;font-weight:700}
+#report table{width:100%;border-collapse:collapse}
+#report th,#report td{border:1px solid #dfe3ea;padding:4.5px 4px;vertical-align:middle;line-height:1.15}
+#report th{background:#f4f7ff;font-size:11px;font-weight:700}
+#report td{font-size:10.5px}
+#report tfoot td{background:#f2f4f6;font-weight:700}
+.t-left{text-align:left}.t-center{text-align:center}.t-right{text-align:right}
+@media print{@page{size:letter portrait;margin:14mm}body{background:#fff}.appbar,.container,.hint,.actions-screen{display:none!important}#report{display:block}}
+</style>
 </head>
 <body>
-  <!-- ======== UI ======== -->
-  <header class="appbar">
-    <div class="appbar-inner">
-      <div class="brand">
-        <img id="logoPreview" class="logoPreview" alt="Logo" src="logo.png" />
-        <div>
-          <h1>CITOSTRACK</h1>
-          <small>ICC = (Preparaciones + Administraciones) / Tiempo (min)</small>
-          <div>
-            <label class="uploader" for="i_logo">
-            <input id="i_logo" type="file" accept="image/*" style="display:none" />
-          </div>
-        </div>
-      </div>
-      <div class="actions actions-screen">
-        <button class="btn ghost" id="btnLimpiar">Limpiar tabla</button>
-        <button class="btn flat" id="btnPDF">Exportar PDF</button>
-      </div>
-    </div>
-  </header>
-
-  <main class="container">
-    <div class="card">
-      <div class="card-header">
-        <h3 class="card-title">Registro de funcionarios</h3>
-        <div class="actions">
-          <button class="btn ok" id="btnAdd">+ Nuevo registro</button>
-          <button class="btn danger" id="btnRem">– Eliminar seleccionados</button>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="table-wrap">
-          <table id="tabla" role="table" aria-label="Registro">
-            <thead>
-              <tr>
-                <th>Sel</th>
-                <th>Nombre</th>
-                <th>RUT</th>
-                <th>Fecha evaluación</th>
-                <th>Semana</th>
-                <th># Preparaciones</th>
-                <th># Administraciones</th>
-                <th>Tiempo (min)</th>
-                <th>ICC</th>
-                <th>Observaciones</th>
-              </tr>
-            </thead>
-            <tbody id="tbody"></tbody>
-            <tfoot>
-              <tr>
-                <td colspan="5" style="text-align:right">Totales:</td>
-                <td id="tPrep">0</td>
-                <td id="tAdm">0</td>
-                <td id="tMin">0</td>
-                <td id="tIcc">0.00</td>
-                <td></td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-        <p class="hint">
-          La <b>Semana</b> usa regla ISO y el <b>ICC</b> se actualiza en tiempo real.
-        </p>
-      </div>
-    </div>
-  </main>
-
-  <!-- ======== PLANTILLA REPORTE (solo impresión) ======== -->
-  <section id="report" aria-hidden="true">
-    <header>
-      <img id="rLogo" alt="Logo reporte" />
+<header class="appbar">
+  <div class="appbar-inner">
+    <div class="brand">
+      <img id="logoPreview" class="logoPreview" alt="Logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAQAAAA1QqvMAAAALElEQVR4Xu3BAQ0AAADCoPdPbQ43oAAAAAAAAAAA"/>
       <div>
-        <h2>Registro de funcionarios – CITOSTRACK</h2>
-        <p>ICC = (Preparaciones + Administraciones) / Tiempo (min)</p>
+        <h1>CITOSTRACK</h1>
+        <small>ICC = (Preparaciones + Administraciones) / Tiempo (min)</small>
+        <label class="uploader" for="i_logo">🖼️ Cargar logo institucional</label>
+        <input id="i_logo" type="file" accept="image/*" style="display:none">
       </div>
-      <div class="meta" id="rMeta">Informe generado:</div>
-    </header>
-
-    <div class="kpis">
-      <div class="k"><div class="l">Total Preparaciones</div><div class="v" id="kPrep">0</div></div>
-      <div class="k"><div class="l">Total Administraciones</div><div class="v" id="kAdm">0</div></div>
-      <div class="k"><div class="l">Total Minutos</div><div class="v" id="kMin">0</div></div>
-      <div class="k"><div class="l">ICC Promedio</div><div class="v" id="kIcc">0.00</div></div>
     </div>
+    <div class="actions actions-screen">
+      <button class="btn ghost" id="btnLimpiar">Limpiar tabla</button>
+      <button class="btn flat" id="btnPDF">Exportar PDF</button>
+    </div>
+  </div>
+</header>
 
-    <table id="rTable">
-      <colgroup>
-        <col class="c-nombre">
-        <col class="c-rut">
-        <col class="c-fecha">
-        <col class="c-sem">
-        <col class="c-prep">
-        <col class="c-adm">
-        <col class="c-min">
-        <col class="c-icc">
-        <col class="c-obs">
-      </colgroup>
-      <thead>
-        <tr>
-          <th class="t-left">Nombre</th>
-          <th class="t-center">RUT</th>
-          <th class="t-center">Fecha</th>
-          <th class="t-center">Sem.</th>
-          <th class="t-right"># Prep</th>
-          <th class="t-right"># Adm</th>
-          <th class="t-right">Min</th>
-          <th class="t-right">ICC</th>
-          <th class="t-left">Observaciones</th>
-        </tr>
-      </thead>
-      <tbody id="rBody"></tbody>
-      <tfoot>
-        <tr>
-          <td colspan="4" class="t-right">Totales:</td>
-          <td id="rtPrep" class="t-right">0</td>
-          <td id="rtAdm"  class="t-right">0</td>
-          <td id="rtMin"  class="t-right">0</td>
-          <td id="rtIcc"  class="t-right">0.00</td>
-          <td></td>
-        </tr>
-      </tfoot>
-    </table>
-  </section>
+<main class="container">
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Registro de funcionarios</h3>
+      <div class="actions">
+        <button class="btn ok" id="btnAdd">+ Nuevo registro</button>
+        <button class="btn danger" id="btnRem">– Eliminar seleccionados</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="table-wrap">
+        <table id="tabla" role="table" aria-label="Registro">
+          <thead>
+            <tr>
+              <th>Sel</th><th>Nombre</th><th>RUT</th><th>Fecha evaluación</th><th>Semana</th>
+              <th># Preparaciones</th><th># Administraciones</th><th>Tiempo (min)</th><th>ICC</th><th>Observaciones</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+          <tfoot>
+            <tr><td colspan="5" style="text-align:right">Totales:</td>
+              <td id="tPrep">0</td><td id="tAdm">0</td><td id="tMin">0</td><td id="tIcc">0.00</td><td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <p class="hint">La <b>Semana</b> usa regla ISO y el <b>ICC</b> se actualiza en tiempo real.</p>
+    </div>
+  </div>
+</main>
 
-  <script src="app.js"></script>
+<section id="report" aria-hidden="true">
+  <header>
+    <img id="rLogo" alt="Logo reporte" />
+    <div><h2>Registro de funcionarios – CITOSTRACK</h2>
+      <p>ICC = (Preparaciones + Administraciones) / Tiempo (min)</p>
+    </div>
+    <div class="meta" id="rMeta">Informe generado:</div>
+  </header>
+  <div class="kpis">
+    <div class="k"><div class="l">Total Preparaciones</div><div class="v" id="kPrep">0</div></div>
+    <div class="k"><div class="l">Total Administraciones</div><div class="v" id="kAdm">0</div></div>
+    <div class="k"><div class="l">Total Minutos</div><div class="v" id="kMin">0</div></div>
+    <div class="k"><div class="l">ICC Promedio</div><div class="v" id="kIcc">0.00</div></div>
+  </div>
+  <table id="rTable">
+    <thead><tr>
+      <th class="t-left">Nombre</th><th class="t-center">RUT</th><th class="t-center">Fecha</th>
+      <th class="t-center">Sem.</th><th class="t-right"># Prep</th><th class="t-right"># Adm</th>
+      <th class="t-right">Min</th><th class="t-right">ICC</th><th class="t-left">Observaciones</th>
+    </tr></thead>
+    <tbody id="rBody"></tbody>
+    <tfoot><tr>
+      <td colspan="4" class="t-right">Totales:</td>
+      <td id="rtPrep" class="t-right">0</td><td id="rtAdm" class="t-right">0</td>
+      <td id="rtMin" class="t-right">0</td><td id="rtIcc" class="t-right">0.00</td><td></td>
+    </tr></tfoot>
+  </table>
+</section>
+
+<script>
+(function(){
+const tbody=document.getElementById("tbody"),tPrep=document.getElementById("tPrep"),tAdm=document.getElementById("tAdm"),tMin=document.getElementById("tMin"),tIcc=document.getElementById("tIcc");
+document.getElementById("btnAdd").addEventListener("click",addRow);
+document.getElementById("btnRem").addEventListener("click",removeRows);
+document.getElementById("btnLimpiar").addEventListener("click",()=>{tbody.innerHTML="";calcAll();});
+document.getElementById("btnPDF").addEventListener("click",buildReportAndPrint);
+const logoInput=document.getElementById("i_logo"),logoImg=document.getElementById("logoPreview"),rLogo=document.getElementById("rLogo");
+logoInput.addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{logoImg.src=r.result;rLogo.src=r.result;};r.readAsDataURL(f);});
+rLogo.src=logoImg.src;
+function toNum(v){const n=parseFloat(String(v).replace(/[^\d.-]/g,""));return isNaN(n)?0:n;}
+function isoWeekNumber(d){d=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const day=d.getUTCDay()||7;d.setUTCDate(d.getUTCDate()+4-day);const yearStart=new Date(Date.UTC(d.getUTCFullYear(),0,1));return Math.ceil((((d-yearStart)/86400000)+1)/7);}
+function weekFromDateStr(f){if(!f)return"";const d=new Date(f);if(isNaN(d))return"";return isoWeekNumber(d);}
+function addRow(){const tr=document.createElement("tr");tr.innerHTML=`<td><input type='checkbox'></td><td contenteditable></td><td contenteditable></td><td><input type='date' class='fecha'></td><td class='semana'></td><td contenteditable class='prep'></td><td contenteditable class='adm'></td><td contenteditable class='min'></td><td class='icc'></td><td contenteditable class='obs'></td>`;tbody.appendChild(tr);tr.querySelectorAll('.prep,.adm,.min').forEach(el=>el.addEventListener('input',calcAll));tr.querySelector('.fecha').addEventListener('input',calcAll);calcAll();}
+function removeRows(){[...tbody.querySelectorAll("tr")].forEach(r=>{const c=r.querySelector("input[type=checkbox]");if(c&&c.checked)r.remove();});calcAll();}
+function calcAll(){let tp=0,ta=0,tm=0,si=0,ri=0;[...tbody.rows].forEach(r=>{const p=toNum(r.querySelector('.prep')?.textContent??0),a=toNum(r.querySelector('.adm')?.textContent??0),m=toNum(r.querySelector('.min')?.textContent??0),f=r.querySelector('.fecha')?.value??"",sem=r.querySelector('.semana'),ic=r.querySelector('.icc');const w=weekFromDateStr(f);if(sem)sem.textContent=w||"";const icc=(m>0)?((p+a)/m):null;ic.textContent=icc?icc.toFixed(2):"";if(p||a||m){tp+=p;ta+=a;tm+=m;if(icc){si+=icc;ri++;}}});tPrep.textContent=tp;tAdm.textContent=ta;tMin.textContent=tm;tIcc.textContent=ri?(si/ri).toFixed(2):"0.00";}
+function formatNow(){const d=new Date();return`${d.getDate().toString().padStart(2,"0")}-${(d.getMonth()+1).toString().padStart(2,"0")}-${d.getFullYear()} ${d.getHours().toString().padStart(2,"0")}:${d.getMinutes().toString().padStart(2,"0")}`;}
+function buildReportAndPrint(){calcAll();document.getElementById("rMeta").textContent="Informe generado: "+formatNow();document.getElementById("rLogo").src=logoImg.src;window.print();}
+addRow();
+})();
+</script>
 </body>
 </html>
